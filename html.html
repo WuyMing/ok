@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<div id="app">
+    {{searchFrom}}
+    <div class="search-form">
+        <form style="text-align:center;">
+            <label for="name">姓名:</label>
+            <input type="text" id="name" v-model="searchFrom.name" placeholder="请输入姓名:">
+            <label>评价:</label>
+            <select id="pingjia" v-model="searchFrom.pingjia">
+                <option value="">请选择</option>
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+            </select>
+            <button type="button" @click="search">查询</button>
+            <button type="button" @click="clear">清空</button>
+        </form>
+    </div>
+    <table border="1px">
+        <thead>
+        <caption>学生成绩表</caption>
+
+
+        <tr>
+            <th>序号</th>
+            <th>姓名</th>
+            <th>语文</th>
+            <th>数学</th>
+            <th>英语</th>
+            <th>评价</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for='(s,index) in sources' :key="index">
+            <td>{{index+1}}</td>
+            <td>{{s.name}}</td>
+            <td>{{s.yu}}</td>
+            <td>{{s.shu}}</td>
+            <td>{{s.ying}}</td>
+            <td><span v-if='(s.yu+s.shu+s.ying)>=240'>A</span>
+                <span v-else-if='(s.yu+s.shu+s.ying)>=210'>B</span>
+                <span v-else>C</span>
+            </td>
+            <td>
+                <button type="button">修改</button>
+                <button type="button">删除</button>
+            </td>
+        </tr>
+
+        </tbody>
+    </table>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script type="module">
+    import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+    createApp({
+
+        data(){
+            return{searchFrom:{name:'',pingjia:''},
+                sources:[
+                ]}
+        },
+        methods:{
+            async search(){
+                let result=await axios.get(`/list?name=${this.searchFrom.name}`);
+                this.sources=result.data
+            },
+            clear(){
+                this.searchFrom={name:'', pingjia : ''}
+                this.search()
+            },
+
+        },
+        mounted(){
+            this.search();
+        }
+    }).mount('#app')
+</script>
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    th, td {
+
+        padding: 8px;
+        text-align: center;
+    }
+    th,caption {
+        background-color: #f2f2f2; /* 表头背景色，可选 */
+    }
+</style>
+</body>
+</html>
